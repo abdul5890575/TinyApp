@@ -9,7 +9,7 @@ app.set("view engine", "ejs");
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "Asm5xK": "http://www.google.com"
 };
 
 function generateRandomString() {
@@ -37,8 +37,9 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-    console.log(req.body);  // Log the POST request body to the console
-    res.send("Ok");         // Respond with 'Ok' (we will replace this)
+    let ShortURL = generateRandomString();
+    urlDatabase[ShortURL] = req.body.longURL;
+    res.redirect(`/urls/${ShortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -47,19 +48,12 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });  
 
-// app.get("/hello", (req, res) => {
-//     const templateVars = { greeting: 'Hello World!' };
-//     res.render("hello_world", templateVars);
-//   });
-
-// app.get("/set", (req, res) => {
-//  const a = 1;
-//  res.send(`a = ${a}`);
-// });
-
-// app.get("/fetch", (req, res) => {
-//  res.send(`a = ${a}`);
-// });
+app.get("/u/:shortURL", (req, res) => {
+  console.log(req.params.shortURL) 
+  let ur=urlDatabase[req.params.shortURL];
+  console.log(ur)
+  res.redirect(ur);
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
