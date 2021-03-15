@@ -14,10 +14,10 @@ const urlDatabase = {
 
 function generateRandomString() {
   let randomarray = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
-  let result = ''
+  let result = '';
   for (let i = 0; i < 6; i++) {
     let indNum = Math.floor(Math.random() * (26 - 0) + 0);
-    result += randomarray[indNum]
+    result += randomarray[indNum];
   }
   return result;
 }
@@ -27,31 +27,31 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-    const templateVars = { urls: urlDatabase };
-    console.log(req.params.shortURL)
-    res.render("urls_index", templateVars);
-  });
+  const templateVars = { urls: urlDatabase };
+  console.log(req.params.shortURL);
+  res.render("urls_index", templateVars);
+});
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
 app.post("/urls", (req, res) => {
-    let ShortURL = generateRandomString();
-    urlDatabase[ShortURL] = req.body.longURL;
-    res.redirect(`/urls/${ShortURL}`);
+  let ShortURL = generateRandomString();
+  urlDatabase[ShortURL] = req.body.longURL;
+  res.redirect(`/urls/${ShortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  console.log(req.params.shortURL)
+  console.log(req.params.shortURL);
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
-});  
+});
 
 app.get("/u/:shortURL", (req, res) => {
-  console.log(req.params.shortURL) 
-  let ur=urlDatabase[req.params.shortURL];
-  console.log(ur)
+  console.log(req.params.shortURL);
+  let ur = urlDatabase[req.params.shortURL];
+  //console.log(ur)
   res.redirect(ur);
 });
 
