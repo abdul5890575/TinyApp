@@ -6,9 +6,24 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-item nav-link" href="/urls">My URLs</a>
-          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+          <a class="nav-item nav-link mt-2" href="/urls">My URLs</a>
+          <a class="nav-item nav-link  mt-2" href="/urls/new">Create New URL</a>
         </div>
       </div>
+      <% if(!username) { %>
+        <form class="nav-item nav-link" method="POST" action="/login"> 
+          <div class="input-group" style="float: right;" >
+          <input name='username' type="text" class="form-control" >  
+          <button class="btn btn-success" type="submit" style="margin-left: 1em">Log In</button>
+          </div>
+        </form>
+      <% } else{ %>  
+        <form class="nav-item nav-link" method="POST" action="/logout"> 
+          <div class="input-group" style="float: right;" >
+          <p><b>Signed in as :  <%=username  %></b><p>  
+          <button class="btn btn-success" type="submit" style="margin-left: 1em">Sign out</button>
+          </div>
+        </form>
+      <% } %>  
     </nav>
   </header>
