@@ -14,9 +14,15 @@ const urlDatabase = {
   "Asm5xK": "http://www.google.com"
 };
 
+let users = { };
+let user=FindUserObject()
+
+
+//------------------------Helper Functions------------------------------//
+
 function generateRandomString() {
-  let randomarray = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
   let result = '';
+  let randomarray = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
   for (let i = 0; i < 6; i++) {
     let indNum = Math.floor(Math.random() * (26 - 0) + 0);
     result += randomarray[indNum];
@@ -24,9 +30,17 @@ function generateRandomString() {
   return result;
 }
 
-app.get("/", (req, res) => {
-  res.redirect('/urls');
-});
+function FindUserObject(cookie_id) {
+  let userSignedInObject;
+  console.log('aaaaaa')
+  for (let id in users) {
+    if( cookie_id === id) {
+      userSignedInObject = users[id]
+    }
+  }
+  return userSignedInObject;
+}
+
 
 // ------------------- Authentication---------------------------//
 app.post("/login", (req, res) => {
@@ -35,26 +49,42 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username')
+  res.clearCookie('user_id')
   res.redirect('/urls');
 });
 
 app.get("/register", (req, res) => {
+  let user = FindUserObject(req.cookies.user_id)
   const templateVars = { urls: urlDatabase,
-                          username: req.cookies["username"] };
+                         username: user }
   res.render("registration", templateVars);
 });
 
+app.post("/register", (req, res) => {
+  let idstring = generateRandomString();
+  let innerObject = { id : idstring, email : req.body.email, password : req.body.password}
+  users[idstring] = innerObject;
+  res.cookie('user_id', idstring)
+  // res.cookie('email',req.body.email)
+  res.redirect('/urls')
+});
+
 //--------------------------------------------------------------//
+app.get("/", (req, res) => {
+  res.redirect('/urls');
+});
+
 app.get("/urls", (req, res) => {
+  let user = FindUserObject(req.cookies.user_id)
   console.log('Cookies: ', req.cookies)
   const templateVars = { urls: urlDatabase,
-                         username: req.cookies["username"] };
+                         username: user };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  let user = FindUserObject(req.cookies.user_id)
+  const templateVars = { username: user};
   res.render("urls_new",templateVars);
 });
 
@@ -65,8 +95,9 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+  let user = FindUserObject(req.cookies.user_id)
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] ,
-                         username: req.cookies["username"]};
+                         username: user};
   res.render("urls_show", templateVars);
 });
 
