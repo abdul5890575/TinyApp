@@ -139,7 +139,8 @@ app.post("/urls", (req, res) => {
   console.log(req.cookies)
   if (req.cookies.user_id) {
     let ShortURL = generateRandomString();
-    urlDatabase[ShortURL] = 'http://'+req.body.longURL;
+    urlDatabase[ShortURL] = { longURL:'http://'+req.body.longURL, userID:req.cookies.user_id};
+    console.log(urlDatabase)
     res.redirect(`/urls/${ShortURL}`);
   } else {
     res.redirect('/login')
