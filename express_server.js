@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
   res.redirect('/urls');
 });
 
-
+// ------------------- Authentication---------------------------//
 app.post("/login", (req, res) => {
   res.cookie('username', req.body['username'])
   res.redirect('/urls');
@@ -39,6 +39,13 @@ app.post("/logout", (req, res) => {
   res.redirect('/urls');
 });
 
+app.get("/register", (req, res) => {
+  const templateVars = { urls: urlDatabase,
+                          username: req.cookies["username"] };
+  res.render("registration", templateVars);
+});
+
+//--------------------------------------------------------------//
 app.get("/urls", (req, res) => {
   console.log('Cookies: ', req.cookies)
   const templateVars = { urls: urlDatabase,
