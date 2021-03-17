@@ -11,17 +11,19 @@
       </div>
     </div>
     <% if(!username) { %>
-      <form class="nav-item nav-link" method="POST" action="/login"> 
-        <div class="input-group" style="float: right;" >
-        <input name='username' type="text" class="form-control" >  
-        <button class="btn btn-success btn-sm" type="submit" style="margin-left: 1em">Log In</button>
+      <form class="nav-item nav-link" method="get" action="/login">   
+        <button class="btn btn-success " type="submit" style="margin-left: 1em">Log In</button>
         </div>
       </form>
-    <% } else{ %>  
+      <form class="nav-item nav-link" method="get" action="/register">   
+        <button class="btn btn-success " type="submit" style="margin-left: 1em">Register</button>
+        </div>
+      </form>
+    <% } else { %>  
       <form class="nav-item nav-link" method="POST" action="/logout"> 
         <div class="input-group" style="float: right;" >
         <p class="navbar-text">Signed in as : <%=username.email  %></p>   
-        <button class="btn btn-success btn-sm" type="submit" style="margin-left: 1em">Sign out</button>
+        <button class="btn btn-success btn" type="submit" style="margin-left: 1em">Sign out</button>
         </div>
       </form>
     <% } %>  

@@ -14,8 +14,12 @@ const urlDatabase = {
   "Asm5xK": "http://www.google.com"
 };
 
-let users = { };
-let user=FindUserObject()
+let users = {  "agyskf": {
+                                id: "agyskf", 
+                                email: "abdul@gmail.com", 
+                                password: "aaaaa"
+                                }};
+
 
 
 //------------------------Helper Functions------------------------------//
@@ -35,9 +39,10 @@ function FindUserObject(cookie_id) {
   for (let id in users) {
     if( cookie_id === id) {
       userSignedInObject = users[id]
+      return userSignedInObject;
     }
   }
-  return userSignedInObject;
+  return;
 }
 
 function CheckDatabaseForEmails(email) {
@@ -51,10 +56,31 @@ function CheckDatabaseForEmails(email) {
   return false;
 }
 
+function FindUserByEmail(email) {
+  let array=Object.values(users)
+  for (let i = 0 ; i < array.length; i++){
+    if (array[i].email === email){
+      console.log(array[i])
+      return array[i];
+    }
+  }
+  return;
+}
+
+
 
 // ------------------- Authentication---------------------------//
+app.get("/login", (req, res) => {
+  let user = FindUserObject(req.cookies.user_id)
+  const templateVars = { urls: urlDatabase,
+                          username: user };
+  res.render("login", templateVars);
+});
+
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body['username'])
+  let user = FindUserByEmail(req.body.email)
+  const templateVars = { username: user }
+  res.cookie('user_id', user['id'])
   res.redirect('/urls');
 });
 
@@ -87,7 +113,7 @@ app.post("/register", (req, res) => {
 
 //--------------------------------------------------------------//
 app.get("/", (req, res) => {
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 app.get("/urls", (req, res) => {
