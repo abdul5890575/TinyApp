@@ -11,14 +11,23 @@ app.set("view engine", "ejs");
 
 const urlDatabase = {
   "b2xVn2": { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  "Asm5xK": { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  "Asm5xK": { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  "X3YwTT": { longURL: "https://www.facebook.com", userID: "Lh3H2a" },
+  "L3S33T": { longURL: "https://www.instagram.com", userID: "Lh3H2a" }
 };
 
 let users = {  "aJ48lW": {
                                 id: "aJ48lW", 
                                 email: "abdul@gmail.com", 
                                 password: "aaaaa"
-                                }};
+                                },
+                "Lh3H2a": {
+                                  id: "Lh3H2a", 
+                                  email: "verma@gmail.com", 
+                                  password: "bbbbb"
+                                  },
+                                               
+                              };
 
 
 
@@ -131,7 +140,7 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let user = FindUserObject(req.cookies.user_id)
-  const templateVars = { username: user};
+  const templateVars = { username: user };
   res.render("urls_new",templateVars);
 });
 
@@ -140,7 +149,6 @@ app.post("/urls", (req, res) => {
   if (req.cookies.user_id) {
     let ShortURL = generateRandomString();
     urlDatabase[ShortURL] = { longURL:'http://'+req.body.longURL, userID:req.cookies.user_id};
-    console.log(urlDatabase)
     res.redirect(`/urls/${ShortURL}`);
   } else {
     res.redirect('/login')
@@ -151,21 +159,29 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let user = FindUserObject(req.cookies.user_id)
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]['longURL'] ,
-                         username: user};
+                         username: user, reqID : req.params.userID};
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  console.log(req.params)
   let id = req.params.shortURL
-  delete urlDatabase[id]
-  res.redirect('/urls');
+  if (req.cookies.user_id === urlDatabase[id]['userID']) {
+    delete urlDatabase[id]
+    res.redirect('/urls');
+  } else {
+    return 'Sorry you are not authorized to delete this item'
+  }
 });
 
 
 app.post("/urls/:id", (req, res) => {
+  let id = req.params.id;
+  if (req.cookies.user_id === urlDatabase[id]['userID']) {
   urlDatabase[req.params.id]['longURL'] = req.body['Key'];
   res.redirect('/urls');
+  } else {
+    return 'Sorry you are not authorized to edit this item'
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
