@@ -64,7 +64,7 @@ function FindUserByEmail(email) {
       return array[i];
     }
   }
-  return;
+  return false;
 }
 
 
@@ -80,8 +80,14 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   let user = FindUserByEmail(req.body.email)
   const templateVars = { username: user }
-  res.cookie('user_id', user['id'])
-  res.redirect('/urls');
+  if (user === false) {
+    res.status(403).send('Error: 404 Email does not exist')
+  } else if (user.password !== req.body.password) {
+    res.status(403).send('Error: 404 Password does not match')
+  } else {
+    res.cookie('user_id', user['id'])
+    res.redirect('/urls');
+  }
 });
 
 app.post("/logout", (req, res) => {
