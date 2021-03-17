@@ -32,13 +32,23 @@ function generateRandomString() {
 
 function FindUserObject(cookie_id) {
   let userSignedInObject;
-  console.log('aaaaaa')
   for (let id in users) {
     if( cookie_id === id) {
       userSignedInObject = users[id]
     }
   }
   return userSignedInObject;
+}
+
+function CheckDatabaseForEmails(email) {
+  let array=Object.values(users)
+  
+  for (let i = 0 ; i < array.length; i++){
+    if (array[i]['email'] === email){
+      return true;
+    }
+  }
+  return false;
 }
 
 
@@ -63,10 +73,16 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   let idstring = generateRandomString();
   let innerObject = { id : idstring, email : req.body.email, password : req.body.password}
-  users[idstring] = innerObject;
-  res.cookie('user_id', idstring)
-  // res.cookie('email',req.body.email)
-  res.redirect('/urls')
+  if (req.body.email === '' || req.body.password === '' ) {
+    res.status(404).send('Error: 404 Email or Password empty')
+  } else if(CheckDatabaseForEmails(req.body.email)) {
+    res.status(400).send('Error: 400 Email already exists')
+  }else {
+    users[idstring] = innerObject;
+    res.cookie('user_id', idstring)
+    // res.cookie('email',req.body.email)
+    res.redirect('/urls')
+  }
 });
 
 //--------------------------------------------------------------//
