@@ -1,5 +1,6 @@
 const express = require("express");
 var cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -89,13 +90,15 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   let user = FindUserByEmail(req.body.email)
   const templateVars = { username: user }
+  let hashedPassword = user['password'];
+  console.log(hashedPassword)
   if (user === false) {
     res.status(403).send('Error: 404 Email does not exist')
-  } else if (user.password !== req.body.password) {
-    res.status(403).send('Error: 404 Password does not match')
-  } else {
+  } else if (bcrypt.compareSync(req.body.password, hashedPassword)){
     res.cookie('user_id', user['id'])
     res.redirect('/urls');
+  } else {
+    res.status(403).send('Error: 404 Password does not match'); 
   }
 });
 
@@ -113,15 +116,18 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   let idstring = generateRandomString();
-  let innerObject = { id : idstring, email : req.body.email, password : req.body.password}
+  const password = req.body.password; 
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  let innerObject = { id : idstring, email : req.body.email, password : hashedPassword}
   if (req.body.email === '' || req.body.password === '' ) {
     res.status(404).send('Error: 404 Email or Password empty')
   } else if(CheckDatabaseForEmails(req.body.email)) {
     res.status(400).send('Error: 400 Email already exists')
   }else {
+    
     users[idstring] = innerObject;
+    console.log(users)
     res.cookie('user_id', idstring)
-    // res.cookie('email',req.body.email)
     res.redirect('/urls')
   }
 });
@@ -164,7 +170,6 @@ app.get("/urls/:shortURL", (req, res) => {
   let user = FindUserObject(req.cookies.user_id)
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]['longURL'] ,
                          username: user, reqID : req.cookies.user_id};
-  // if (user['id'] === req.cookies.user_id){
     if (!user){
       res.status(400).send('Error: Sorry this is not your link')
     } else if (user['id'] === req.cookies.user_id) {
