@@ -1,5 +1,6 @@
 const express = require("express");
 var cookieParser = require('cookie-parser')
+var cookieSession = require('cookie-session')
 const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
 const app = express();
@@ -9,6 +10,14 @@ const PORT = 8080; // default port 8080
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
 app.set("view engine", "ejs");
+
+app.use(cookieSession({
+  name: 'session',
+  keys: [/* secret keys */],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 const urlDatabase = {
   "b2xVn2": { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
@@ -20,12 +29,12 @@ const urlDatabase = {
 let users = {  "aJ48lW": {
                                 id: "aJ48lW", 
                                 email: "abdul@gmail.com", 
-                                password: "aaaaa"
+                                password: "$2b$10$LURWZTi2gVPOpQcXaTDHS.rRbRBrE3Y/Pmb6INc4Bh2cEbRoO5yD2" //aaaaa
                                 },
                 "Lh3H2a": {
                                   id: "Lh3H2a", 
                                   email: "verma@gmail.com", 
-                                  password: "bbbbb"
+                                  password: "$2b$10$MwAOTkfw5eobQiNscBZgJeronij/pXmEMvSKjjGneTe1wOwleeOFe" //bbbbb
                                   },
                                                
                               };
