@@ -139,9 +139,13 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let user = FindUserObject(req.cookies.user_id)
-  const templateVars = { username: user };
-  res.render("urls_new",templateVars);
+  if (!req.cookies.user_id) {
+    res.redirect('/login');
+  } else{
+    let user = FindUserObject(req.cookies.user_id)
+    const templateVars = { username: user };
+    res.render("urls_new",templateVars);
+  }
 });
 
 app.post("/urls", (req, res) => {
@@ -159,8 +163,13 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let user = FindUserObject(req.cookies.user_id)
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]['longURL'] ,
-                         username: user, reqID : req.params.userID};
-  res.render("urls_show", templateVars);
+                         username: user, reqID : req.cookies.user_id};
+  // if (user['id'] === req.cookies.user_id){
+    if (!user){
+      res.status(400).send('Error: Sorry this is not your link')
+    } else if (user['id'] === req.cookies.user_id) {
+      res.render("urls_show", templateVars);
+    }       
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -185,7 +194,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let ur = urlDatabase[req.params.shortURL];
+  let ur = urlDatabase[req.params.shortURL]['longURL'];
   res.redirect(ur);
 });
 
