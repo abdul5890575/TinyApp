@@ -1,14 +1,15 @@
 const express = require("express");
-//var cookieParser = require('cookie-parser')
 var cookieSession = require('cookie-session')
 const bcrypt = require('bcrypt');
+
+var FindUserByEmail = require('./helpers');
+
 const bodyParser = require("body-parser");
 const app = express();
 const PORT = 8080; // default port 8080
 
 
 app.use(bodyParser.urlencoded({extended: true}));
-//app.use(cookieParser())
 app.set("view engine", "ejs");
 
 app.use(cookieSession({
@@ -75,16 +76,6 @@ function CheckDatabaseForEmails(email) {
   return false;
 }
 
-function FindUserByEmail(email) {
-  let array=Object.values(users)
-  for (let i = 0 ; i < array.length; i++){
-    if (array[i].email === email){
-      console.log(array[i])
-      return array[i];
-    }
-  }
-  return false;
-}
 
 
 
@@ -97,7 +88,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  let user = FindUserByEmail(req.body.email)
+  let user = FindUserByEmail(req.body.email,users)
   const templateVars = { username: user }
   let hashedPassword = user['password'];
   console.log(hashedPassword)
