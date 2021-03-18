@@ -168,11 +168,13 @@ app.get("/urls/:shortURL", (req, res) => {
   let user = FindUserObject(req.session.user_id);
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]['longURL'] ,
     username: user, reqID :req.session.user_id};
-  if (!user) {
-    res.status(400).send('Error: Sorry this is not your link');
-  } else if (user['id'] === req.session.user_id) {
+  if (urlDatabase[req.params.shortURL]['userID'] === req.session.user_id) {
+    console.log(user['id'])
+    console.log(req.session.user_id)
     res.render("urls_show", templateVars);
-  }
+  } else {
+    res.status(400).send('Error: Sorry you need to sign in or this link does not belong to you');
+  } 
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
