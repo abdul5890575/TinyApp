@@ -123,10 +123,10 @@ app.post("/register", (req, res) => {
   } else if (CheckDatabaseForEmails(req.body.email)) {
     res.status(400).send('Error: 400 Email already exists');
   } else {
-    
     users[idstring] = innerObject;
-    console.log(users);
-    res.cookie('user_id', idstring);
+    console.log(users)
+    console.log(users[idstring])
+    req.session.user_id = users[idstring]['id']; /////////////ask
     res.redirect('/urls');
   }
 });
