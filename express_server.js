@@ -79,7 +79,7 @@ let CheckDatabaseForEmails = function (email) {
 
 
 
-// ------------------- Authentication---------------------------//
+//User Autentication end points
 app.get("/login", (req, res) => {
   let user = FindUserObject(req.session.user_id);
   const templateVars = { urls: urlDatabase,
@@ -124,14 +124,12 @@ app.post("/register", (req, res) => {
     res.status(400).send('Error: 400 Email already exists');
   } else {
     users[idstring] = innerObject;
-    console.log(users)
-    console.log(users[idstring])
-    req.session.user_id = users[idstring]['id']; /////////////ask
+    req.session.user_id = users[idstring]['id']; 
     res.redirect('/urls');
   }
 });
 
-//--------------------------------------------------------------//
+//Other Endpoints
 app.get("/", (req, res) => {
   res.redirect('/login');
 });
@@ -156,7 +154,7 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   if (req.session.user_id) {
     let ShortURL = generateRandomString();
-    urlDatabase[ShortURL] = { longURL:'http://' + req.body.longURL, userID:req.session.user_id};
+    urlDatabase[ShortURL] = { longURL:req.body.longURL, userID:req.session.user_id};
     res.redirect(`/urls/${ShortURL}`);
   } else {
     res.redirect('/login');
